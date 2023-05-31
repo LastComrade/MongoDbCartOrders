@@ -1,33 +1,21 @@
-const express=require("express");
-const app=express();
-const PORT=5000;
-app.set("views","./views");
-app.set('view engine', 'html');
-app.use(express.static(__dirname + '/views'));
-app.get('/',(req,res)=>{
-    res.render("payment.html"); 
-})
-/*````````````````````````MONGO DB````````````````````````````````*/
-// const {productsArray} = require("./orders.js")
-const mongoose = require('mongoose')
-mongoose.connect("mongodb://0.0.0.0:27017/SHOPHUB")
-.then(() => {
-    console.log('MongoDB connected');
-}).catch(() => {
-    console.log('Error in MongoDB connection');
-})
+const express = require("express");
+const app = express();
+const PORT = 5000; // Konark - Make it a .env variable, nothing but a good practice for security reasons
 
-const mySchema = new mongoose.Schema({
-    productsList: Array
-}); 
+// DB Connection
+const dbConnection = require("./utility/db.js");
 
-const order = mongoose.model('orders', mySchema)
+// Routes
+const routes = require("./routes");
 
-// const ordersArray = productsArray;
+// Middlewares
+app.use(express.json()); // Konark - This is a middleware to parse the request body
+app.use("/api", routes); // Konark - This is a middleware to handle all the routes
+app.set("views", "./views");
+app.set("view engine", "html");
+app.use(express.static(__dirname + "/views"));
+app.get("/", (req, res) => {
+  res.render("payment.html");
+});
 
-// const orderDetails= new order({
-//     productsList: ordersArray
-// });
-
-// orderDetails.save().then(() => console.log('user saved'))
-app.listen(PORT);
+app.listen(PORT, () => console.log(`Server started at port ${PORT}`));
